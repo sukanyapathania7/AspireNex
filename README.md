@@ -1,2 +1,2 @@
 # AspireNex
-This repository serves as a showcase of my work and projects, highlighting my skills in software development.
+This repository serves as a showcase of my work and projects, highlighting my skills in software development. Code is in master branch
