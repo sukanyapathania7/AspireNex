@@ -1,0 +1,117 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Maker</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Create a Quiz</h2>
+        <form id="quizForm">
+            <div class="form-group">
+                <label for="quizTitle">Quiz Title:</label>
+                <input type="text" class="form-control" id="quizTitle" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Quiz</button>
+        </form>
+
+        <hr>
+
+        <h2>Add a Question</h2>
+        <form id="questionForm">
+            <div class="form-group">
+                <label for="quizSelect">Select Quiz:</label>
+                <select class="form-control" id="quizSelect" required>
+                    <!-- Options will be populated dynamically via JavaScript -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="questionText">Question Text:</label>
+                <textarea class="form-control" id="questionText" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="options">Options:</label>
+                <input type="text" class="form-control" id="option1" placeholder="Option 1" required>
+                <input type="text" class="form-control" id="option2" placeholder="Option 2" required>
+                <input type="text" class="form-control" id="option3" placeholder="Option 3" required>
+                <input type="text" class="form-control" id="option4" placeholder="Option 4" required>
+            </div>
+            <div class="form-group">
+                <label for="correctOption">Correct Option (1-4):</label>
+                <input type="number" class="form-control" id="correctOption" min="1" max="4" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Question</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Load quizzes into dropdown
+            $.get("/api/quizzes/", function(quizzes) {
+                quizzes.forEach(function(quiz) {
+                    $('#quizSelect').append($('<option>', {
+                        value: quiz.id,
+                        text: quiz.title
+                    }));
+                });
+            });
+
+            // Handle form submission for creating quiz
+            $('#quizForm').submit(function(event) {
+                event.preventDefault();
+                var quizTitle = $('#quizTitle').val();
+                $.ajax({
+                    url: '/api/quizzes/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ title: quizTitle }),
+                    success: function(response) {
+                        alert('Quiz created successfully!');
+                    },
+                    error: function(error) {
+                        alert('Error creating quiz!');
+                    }
+                });
+            });
+
+            // Handle form submission for adding question
+            $('#questionForm').submit(function(event) {
+                event.preventDefault();
+                var quizId = $('#quizSelect').val();
+                var questionText = $('#questionText').val();
+                var option1 = $('#option1').val();
+                var option2 = $('#option2').val();
+                var option3 = $('#option3').val();
+                var option4 = $('#option4').val();
+                var correctOption = $('#correctOption').val();
+                $.ajax({
+                    url: '/api/questions/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        quizId: quizId,
+                        questionText: questionText,
+                        option1: option1,
+                        option2: option2,
+                        option3: option3,
+                        option4: option4,
+                        correctOption: correctOption
+                    }),
+                    success: function(response) {
+                        alert('Question added successfully!');
+                    },
+                    error: function(error) {
+                        alert('Error adding question!');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
